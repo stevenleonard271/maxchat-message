@@ -5,8 +5,10 @@ const Message = db.message
 
 exports.create = async (req, res) => {
     try {
-        const message = await Message.create(req.body)
-        res.status(200).json(message)
+        await Message.create(req.body)
+        res.status(200).json({
+            message: "Successfully insert message"
+        })
     } catch (error) {
         res.status(500).json({
             message: error.message
@@ -16,6 +18,7 @@ exports.create = async (req, res) => {
 }
 
 exports.findAll = async (req, res) => {
+
     try {
         const message = await Message.find();
         res.status(200).json(message)
@@ -73,7 +76,9 @@ exports.delete = async (req, res) => {
                 message: `Cannot find any message with ID ${id}`
             })
         }
-        res.status(200).json(message)
+        res.status(200).json({
+            message:`Delete message with ID ${id} successful`
+        })
     } catch (error) {
         res.status(500).json({
             message: error.message
