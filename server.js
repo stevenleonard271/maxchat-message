@@ -16,7 +16,7 @@ const mongooseConfig  = {
     useUnifiedTopology:true,
 }
 //koneksi ke database
-db.mongoose.connect(db.url)
+db.mongoose.connect(db.url, mongooseConfig)
 .then(()=>console.log("Database Connected"))
 .catch(
     err => {
