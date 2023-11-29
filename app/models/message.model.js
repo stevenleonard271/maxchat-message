@@ -3,8 +3,8 @@ module.exports = mongoose => {
         type: { type: String, required: true },
         from: { type: String, required: true },
         status: { type: String, required: true },
-        text: { type: String },
-        attachment: { type: String }, //optional
+        text: { type: String },       //optional if type = image
+        attachment: { type: String }, //optional if type = text
         meta: {
             header: {
                 text: { type: String }

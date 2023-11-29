@@ -40,7 +40,7 @@ exports.create = async (req, res) => {
 //GET: Get all messages (filter: with query status and type)
 exports.findAll = async (req, res) => {
     try {
-        const { status, type } = req.query;
+        const { status, type, page, limit } = req.query;
         let query = {}
 
         // Check if status or type is provided in the query parameters
@@ -51,9 +51,25 @@ exports.findAll = async (req, res) => {
         if (type) {
             query.type = type;
         }
-        const message = await Message.find(query);
 
-        res.status(200).json(message)
+        const pageNumber = parseInt(page) || 1;
+        const pageSize = parseInt(limit) || 10;
+
+        // Handle the case where the page is less than 1
+        const skip = Math.max(0, (pageNumber - 1) * pageSize);
+
+        // Get total records 
+        const totalDocuments = await Message.countDocuments(query);
+
+        const messages = await Message.find(query).skip(skip).limit(pageSize);
+
+        res.status(200).json({
+            currentPage: pageNumber,
+            limit: pageSize,
+            totalRecords: totalDocuments,
+            totalPages: Math.ceil(totalDocuments / pageSize),
+            data: messages,
+        })
     } catch (error) {
         res.status(500).json({
             message: error.message
@@ -83,6 +99,22 @@ exports.show = async (req, res) => {
 exports.update = async (req, res) => {
     try {
         const { id } = req.params
+        const { type, text, attachmentUrl } = req.body;
+
+        // Check if the type is "image" and if attachmentUrl is provided
+        if (type === 'image' && !attachmentUrl) {
+            res.status(400).json({
+                message: 'For type "image", attachmentUrl is required.'
+            });
+        }
+
+        // Check if the type is "text" and if text is provided
+        if (type === 'text' && !text) {
+            res.status(400).json({
+                message: 'For type "text", text is required.'
+            });
+        }
+
         const message = await Message.findByIdAndUpdate(id, req.body);
 
         if (!message) {
@@ -92,7 +124,11 @@ exports.update = async (req, res) => {
         }
 
         const updatedMessage = await Message.findById(id)
-        res.status(200).json(updatedMessage)
+        res.status(200).json(
+            {   
+                data: updatedMessage
+            }
+        )
 
     } catch (error) {
         res.status(500).json({
@@ -120,4 +156,3 @@ exports.delete = async (req, res) => {
         })
     }
 }
-
