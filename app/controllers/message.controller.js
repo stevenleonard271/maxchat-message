@@ -6,31 +6,45 @@ const Message = db.message
 //POST : Insert Message 
 exports.create = async (req, res) => {
     try {
-        const { type, text, attachment } = req.body;
+        const { type, text, attachment, status } = req.body;
         const formattedDate = moment().format('YYYY/MM/DD HH:mm:ss');
-        // Check if the type is "image" and if attachmentUrl is provided
-        if (type === 'image' && !attachment) {
-            res.status(400).json({
-                message: 'For type "image", attachmentUrl is required.'
+
+        if (type !== "text" && type !== "image") {
+            return res.status(400).json({
+                message: "Type should be filled with 'text' or 'image'"
+            });
+        }
+
+        if (status !== "pending" && status !== "delivered" && status !== "sent") {
+            return res.status(400).json({
+                message: "Status should be filled with 'pending' or 'delivered' or 'sent'"
             });
         }
 
         // Check if the type is "text" and if text is provided
-        if (type === 'text' && !text) {
-            res.status(400).json({
+        if (type === "text" && !text) {
+            return res.status(400).json({
                 message: 'For type "text", text is required.'
             });
         }
+
+        // Check if the type is "image" and if attachmentUrl is provided
+        if (type === "image" && !attachment) {
+            return res.status(400).json({
+                message: 'For type "image", image is required.'
+            });
+        }
+
         const messageData = {
             ...req.body,
             date: formattedDate
         }
         await Message.create(messageData)
-        res.status(200).json({
+        return res.status(200).json({
             message: "Successfully insert message"
         })
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             message: error.message
         })
     }
@@ -63,7 +77,7 @@ exports.findAll = async (req, res) => {
 
         const messages = await Message.find(query).skip(skip).limit(pageSize);
 
-        res.status(200).json({
+        return res.status(200).json({
             currentPage: pageNumber,
             limit: pageSize,
             totalRecords: totalDocuments,
@@ -71,7 +85,7 @@ exports.findAll = async (req, res) => {
             data: messages,
         })
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             message: error.message
         })
     }
@@ -89,7 +103,7 @@ exports.show = async (req, res) => {
         }
         res.status(200).json(message)
     } catch (error) {
-        res.status(500).json({
+       return res.status(500).json({
             message: error.message
         })
     }
@@ -99,21 +113,9 @@ exports.show = async (req, res) => {
 exports.update = async (req, res) => {
     try {
         const { id } = req.params
-        const { type, text, attachmentUrl } = req.body;
+        const { type, text, attachment } = req.body;
 
-        // Check if the type is "image" and if attachmentUrl is provided
-        if (type === 'image' && !attachmentUrl) {
-            res.status(400).json({
-                message: 'For type "image", attachmentUrl is required.'
-            });
-        }
-
-        // Check if the type is "text" and if text is provided
-        if (type === 'text' && !text) {
-            res.status(400).json({
-                message: 'For type "text", text is required.'
-            });
-        }
+        
 
         const message = await Message.findByIdAndUpdate(id, req.body);
 
@@ -125,7 +127,7 @@ exports.update = async (req, res) => {
 
         const updatedMessage = await Message.findById(id)
         res.status(200).json(
-            {   
+            {
                 data: updatedMessage
             }
         )
