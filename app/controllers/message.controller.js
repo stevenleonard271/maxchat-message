@@ -6,10 +6,10 @@ const Message = db.message
 //POST : Insert Message 
 exports.create = async (req, res) => {
     try {
-        const { type, text, attachmentUrl } = req.body;
+        const { type, text, attachment } = req.body;
         const formattedDate = moment().format('YYYY/MM/DD HH:mm:ss');
         // Check if the type is "image" and if attachmentUrl is provided
-        if (type === 'image' && !attachmentUrl) {
+        if (type === 'image' && !attachment) {
             res.status(400).json({
                 message: 'For type "image", attachmentUrl is required.'
             });
