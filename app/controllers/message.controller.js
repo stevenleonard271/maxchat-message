@@ -1,11 +1,31 @@
 const db = require("../models")
+const moment = require('moment')
 
 const Message = db.message
 
 //POST : Insert Message 
 exports.create = async (req, res) => {
     try {
-        await Message.create(req.body)
+        const { type, text, attachmentUrl } = req.body;
+        const formattedDate = moment().format('YYYY/MM/DD HH:mm:ss');
+        // Check if the type is "image" and if attachmentUrl is provided
+        if (type === 'image' && !attachmentUrl) {
+            res.status(400).json({
+                message: 'For type "image", attachmentUrl is required.'
+            });
+        }
+
+        // Check if the type is "text" and if text is provided
+        if (type === 'text' && !text) {
+            res.status(400).json({
+                message: 'For type "text", text is required.'
+            });
+        }
+        const messageData = {
+            ...req.body,
+            date: formattedDate
+        }
+        await Message.create(messageData)
         res.status(200).json({
             message: "Successfully insert message"
         })
@@ -22,7 +42,7 @@ exports.findAll = async (req, res) => {
     try {
         const { status, type } = req.query;
         let query = {}
-        
+
         // Check if status or type is provided in the query parameters
         if (status) {
             query.status = status;
@@ -32,7 +52,7 @@ exports.findAll = async (req, res) => {
             query.type = type;
         }
         const message = await Message.find(query);
-        
+
         res.status(200).json(message)
     } catch (error) {
         res.status(500).json({

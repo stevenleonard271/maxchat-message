@@ -3,8 +3,8 @@ module.exports = mongoose => {
         type: { type: String, required: true },
         from: { type: String, required: true },
         status: { type: String, required: true },
-        text: { type: String, required: true },
-        attachment: { type: String },
+        text: { type: String },
+        attachment: { type: String }, //optional
         meta: {
             header: {
                 text: { type: String }
@@ -15,15 +15,17 @@ module.exports = mongoose => {
                     type: { type: String }
                 }
             ]
-        },
-        date: { type: String }
-    });
+        }, //optional
+        date: { type: String}
+    },
+        { versionKey: false }
+    );
 
-    schema.method("toJSON", function(){
-        const { __v, _id, ...object} = this.toObject()
+    schema.method("toJSON", function () {
+        const { __v, _id, ...object } = this.toObject()
         object.id = _id
 
         return object
     })
-    return mongoose.model("message", schema,"message")
+    return mongoose.model("message", schema, "message")
 }
