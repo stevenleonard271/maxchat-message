@@ -12,12 +12,14 @@ exports.create = async (req, res) => {
 
         if (type !== "text" && type !== "image") {
             return res.status(400).json({
+                success: false,
                 message: "Type should be filled with 'text' or 'image'"
             });
         }
 
         if (status !== "pending" && status !== "delivered" && status !== "sent") {
             return res.status(400).json({
+                success: false,
                 message: "Status should be filled with 'pending' or 'delivered' or 'sent'"
             });
         }
@@ -25,14 +27,16 @@ exports.create = async (req, res) => {
         // Check if the type is "text" and if text is provided
         if (type === "text" && !text) {
             return res.status(400).json({
-                message: 'For type "text", text is required.'
+                success: false,
+                message: "For type 'text', path text is required."
             });
         }
 
-        // Check if the type is "image" and if attachmentUrl is provided
+        // Check if the type is "image" and if attachment is provided
         if (type === "image" && !attachment) {
             return res.status(400).json({
-                message: 'For type "image", image is required.'
+                success: false,
+                message: "For type 'image', path attachment is required."
             });
         }
 
@@ -42,10 +46,12 @@ exports.create = async (req, res) => {
         }
         await Message.create(messageData)
         return res.status(200).json({
+            success: true,
             message: "Successfully insert message"
         })
     } catch (error) {
         return res.status(500).json({
+            success: false,
             message: error.message
         })
     }
@@ -69,24 +75,23 @@ exports.findAll = async (req, res) => {
 
         const pageNumber = parseInt(page) || 1;
         const pageSize = parseInt(limit) || 10;
-
-        // Handle the case where the page is less than 1
         const skip = Math.max(0, (pageNumber - 1) * pageSize);
-
-        // Get total records 
         const totalDocuments = await Message.countDocuments(query);
-
         const messages = await Message.find(query).skip(skip).limit(pageSize);
 
         return res.status(200).json({
-            currentPage: pageNumber,
-            limit: pageSize,
-            totalRecords: totalDocuments,
-            totalPages: Math.ceil(totalDocuments / pageSize),
+            success: true,
+            pagination: {
+                currentPage: pageNumber,
+                limit: pageSize,
+                totalRecords: totalDocuments,
+                totalPages: Math.ceil(totalDocuments / pageSize),
+            },
             data: messages,
         })
     } catch (error) {
         return res.status(500).json({
+            success: false,
             message: error.message
         })
     }
@@ -101,6 +106,7 @@ exports.show = async (req, res) => {
 
         if (!validObjectId) {
             return res.status(400).json({
+                success: false,
                 message: `Invalid ObjectId: ${id}`
             });
         }
@@ -108,13 +114,19 @@ exports.show = async (req, res) => {
         const message = await Message.findById(id);
         if (!message) {
             return res.status(400).json({
-                message: `Cannot find any product with ID ${id}`
+                success: false,
+                message: `Cannot find any message with ID ${id}`
             })
         }
-        console.log(message)
-        return res.status(200).json(message)
+
+        return res.status(200).json({
+            success: true,
+            data: message
+        })
+
     } catch (error) {
         return res.status(500).json({
+            success: false,
             message: error.message
         })
     }
@@ -129,16 +141,17 @@ exports.update = async (req, res) => {
 
         if (!validObjectId) {
             return res.status(400).json({
+                success: false,
                 message: `Invalid ObjectId: ${id}`
             });
         }
 
         const { type, text, attachment, status } = req.body;
 
-
         if (type) {
             if (type !== "text" && type !== "image") {
                 return res.status(400).json({
+                    success: false,
                     message: "Type should be filled with 'text' or 'image'"
                 });
             }
@@ -146,14 +159,16 @@ exports.update = async (req, res) => {
             // Check if the type is "text" and if text is provided
             if (type === "text" && !text) {
                 return res.status(400).json({
-                    message: 'For type "text", text is required.'
+                    success: false,
+                    message: "For type 'text', path text is required."
                 });
             }
 
             // Check if the type is "image" and if attachmentUrl is provided
             if (type === "image" && !attachment) {
                 return res.status(400).json({
-                    message: 'For type "image", image is required.'
+                    success: false,
+                    message: "For type 'image', path attachment is required."
                 });
             }
 
@@ -162,6 +177,7 @@ exports.update = async (req, res) => {
         if (status) {
             if (status !== "pending" && status !== "delivered" && status !== "sent") {
                 return res.status(400).json({
+                    success: false,
                     message: "Status should be filled with 'pending' or 'delivered' or 'sent'"
                 });
             }
@@ -171,12 +187,14 @@ exports.update = async (req, res) => {
 
         if (!message) {
             return res.status(400).json({
+                success: false,
                 message: `Cannot find any message with ID ${id}`
             })
         }
 
         const updatedMessage = await Message.findById(id)
         return res.status(200).json({
+            success: true,
             message: `Update message with ID ${id} successful`,
             data: updatedMessage
         }
@@ -184,6 +202,7 @@ exports.update = async (req, res) => {
 
     } catch (error) {
         return res.status(500).json({
+            success: false,
             message: error.message
         })
     }
@@ -198,6 +217,7 @@ exports.delete = async (req, res) => {
 
         if (!validObjectId) {
             return res.status(400).json({
+                success: false,
                 message: `Invalid ObjectId: ${id}`
             });
         }
@@ -205,14 +225,17 @@ exports.delete = async (req, res) => {
         const message = await Message.findByIdAndDelete(id);
         if (!message) {
             return res.status(404).json({
+                success: false,
                 message: `Cannot find any message with ID ${id}`
             })
         }
         return res.status(200).json({
+            success: true,
             message: `Delete message with ID ${id} successful`
         })
     } catch (error) {
         return res.status(500).json({
+            success: false,
             message: error.message
         })
     }
