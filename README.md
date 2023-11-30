@@ -82,4 +82,36 @@ To run the MaxChat Message API locally, follow these simple steps:
       ```
       POST http://localhost:3000/message
       ```
+      
+      Sample JSON body:
+      ```json
+      {
+          "type": "text",
+          "from": "0812341655405",
+          "status": "delivered",
+          "text": "quia et suscipit suscipit recusandae consequuntur expedita et cum reprehenderit molestiae ut ut quas totam nostrum rerum est ow",
+          "attachment": "https://via.placeholder.com/600/92c952",
+          "meta": {
+              "header": {
+                  "text": "Lorem Ipsum"
+              },
+              "body": [
+                  {
+                      "index": 1,
+                      "type": "text"
+                  },
+                  {
+                      "index": 2,
+                      "type": "image",
+                      "attachmentUrl": "oke"
+                  },
+                  {
+                      "index": 3,
+                      "type": "text",
+                      "text": "asdf"
+                  }
+              ]
+          }
+      }
+      ```
 
