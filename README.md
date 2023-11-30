@@ -16,7 +16,7 @@ To get started with MaxChat Message, follow these steps:
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/your-username/maxchat-message.git
+    git clone https://github.com/stevenleonard271/maxchat-message.git
     ```
 
 2. Navigate to the project directory:
