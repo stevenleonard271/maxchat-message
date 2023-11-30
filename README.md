@@ -61,10 +61,15 @@ To run the MaxChat Message API locally, follow these simple steps:
 
 3. Explore the available routes:
 
-    - **Get all messages:**
+   - **Get all messages with optional filtering:**
       ```
-      GET http://localhost:3000/message
+      GET http://localhost:3000/message?status=delivered&type=text&limit=10&page=1
       ```
+
+      - **Filtering by Status:** You can filter messages by status, e.g., `delivered`, `sent`, `pending`.
+      - **Filtering by Type:** You can filter messages by type, e.g., `text`, `image`.
+      - **Limiting Results:** You can limit the number of results using the `limit` parameter, e.g., `10`.
+      - **Navigating Pages:** You can navigate through paginated results using the `page` parameter, e.g., `1`.
 
     - **Get, Update, or Delete a specific message by ID:**
       ```
