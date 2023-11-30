@@ -33,16 +33,6 @@ To get started with MaxChat Message, follow these steps:
 
 ## Usage
 
-To run the service locally, follow these steps:
-
-1. Run this command 
-
-    ```bash
-    npm run start
-    ```
-
-2. You could access the api using localhost:3000/message
-
 To run the MaxChat Message API locally, follow these simple steps:
 
 1. Open your terminal and run the following command:
