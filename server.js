@@ -26,6 +26,7 @@ db.mongoose.connect(db.url, mongooseConfig)
 
 //Call the route
 require("./app/routes/message.routes")(app);
+require("./app/routes/contact.routes")(app);
 
 const PORT = process.env.PORT || 3000
 
